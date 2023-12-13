@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const apicache = require('apicache');
 
 const app = express();
-let cache = apicache.middleware;
+const cache = apicache.middleware;
 
 app.use(cache('5 minutes'));
 app.use(bodyParser.json());
