@@ -4,9 +4,8 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const users = [
-    { firstName: 'Jane', age: 20 },
-    { firstName: 'John', age: 30 },
-    { firstName: 'Mary', age: 50 },
+    { firstName: 'Kaban', age: 33 },
+    { firstName: 'Bee', age: 27 },
 ]
 
 app.use(bodyParser.json());
