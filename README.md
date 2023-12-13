@@ -61,7 +61,11 @@
 
 > 1-body.js
 ```js
+app.use(bodyParser.json());
 
+app.post('/', (req, res) => {
+    res.json(req.body);
+});
 ```
 
 ### 2. Іменники у шляхах до ключових точок
@@ -83,7 +87,31 @@
 
 > 2-methods.js
 ```js
+app.get('/articles', (req, res) => {
+    const articles = [];
+    // ...
 
+    res.json(articles);
+});
+
+app.post('/articles', (req, res) => {
+    //...
+    
+    res.json(req.body);
+});
+
+app.put('/articles/:id', (req, res) => {
+    // ...
+
+    res.json(req.body);
+});
+
+app.delete('/articles/:id', (req, res) => {
+    const { id } = req.params;
+    // ...
+
+    res.json({ deleted: id });
+});
 ```
 
 
@@ -99,7 +127,12 @@
 
 > 3-pathes.js
 ```js
+app.get('/articles/:articleId/comments', (req, res) => {
+    const comments = [];
+    // ...
 
+    res.json(comments);
+});
 ```
 
 Якщо кожна стаття має власні коментарі, то така структура має сенс, оскільки коментарі є дочірніми об'єктами статей. В іншому ж випадку це лише заплутає користувача.
@@ -121,7 +154,26 @@
 
 > 4-error.js
 ```js
+// existing users
+const users = [
+    { email: 'kaban@gmail.com' }
+]
 
+app.post('/users', (req, res) => {
+    const { email } = req.body;
+    const userExists = users.find(
+        user => user.email === email
+    );
+
+    if (userExists) {
+        return res
+            .status(400)
+            .json({
+                error: 'User already exists'
+            });
+    }
+    res.json(req.body);
+});
 ```
 
 Також коди помилок повинні супроводжуватися повідомленнями, щоб у користувачів чи розробників було достатньо інформації для усунення проблеми.
@@ -136,7 +188,30 @@
 
 > 5-filters.js
 ```js
+// existing users
+const users = [
+    { firstName: 'Kaban', age: 33 },
+    { firstName: 'Bee', age: 27 },
+]
 
+app.get('/users', (req, res) => {
+    const { firstName, age } = req.query;
+    let filtered = [...users];
+
+    if (firstName) {
+        filtered = filtered.filter(
+            user => user.firstName === firstName
+        );
+    }
+
+    if (age) {
+        filtered = filtered.filter(
+            user => Number(user.age) === Number(age)
+        );
+    }
+
+    res.json(filtered);
+});
 ```
 
 У наведеному вище коді ми використовуємо змінну req.query для отримання параметрів запиту. Потім ми витягуємо значення властивостей, деструктуруючи окремі параметри запиту у змінні. Далі запускаємо фільтр для кожного значення параметра запиту, щоб знайти елементи, які хочемо повернути.
@@ -180,7 +255,18 @@ SSL-сертифікат не надто складно завантажити �
 
 > 6-cache.js
 ```js
+const cache = apicache.middleware;
 
+app.use(cache('5 minutes'));
+
+const users = [
+    { firstName: 'Mad', lastName: 'Bee', age: 27 },
+    { firstName: 'Kaban', lastName: 'Ivanovich', age: 33 },
+]
+
+app.get('/users', (req, res) => {
+    res.json(users);
+});
 ```
 
 При використанні кешування, потрібно включити поле `Cache-Control` у ваші заголовки. Це допоможе користувачам ефективніше використовувати систему кешування.
@@ -194,5 +280,17 @@ SSL-сертифікат не надто складно завантажити �
 
 > 7-versions.js
 ```js
+app.get('/v1/users', (req, res) => {
+    const users = [];
+    // do something good...
 
+    res.json(users);
+});
+
+app.get('/v2/users', (req, res) => {
+    const users = [];
+    // do something GREAT!!!
+
+    res.json(users);
+});
 ```
